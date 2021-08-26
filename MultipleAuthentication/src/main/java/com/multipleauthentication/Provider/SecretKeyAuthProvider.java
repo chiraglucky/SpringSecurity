@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -19,10 +20,14 @@ public class SecretKeyAuthProvider implements AuthenticationProvider {
     @Autowired
     UserSecretKeyRepository userSecretKeyRepository;
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        Optional<UserSecretKey> user =userSecretKeyRepository.findByUsername(authentication.getName());
-        if(user.isPresent()){
+        UserSecretKey user =userSecretKeyRepository.findByUsername(authentication.getName()).orElse(new UserSecretKey());
+
+        if(passwordEncoder.matches(authentication.getCredentials().toString(),user.getPin())){
             return new SecretKeyAuthToken(authentication.getName(),
                     authentication.getCredentials(),
                     Arrays.asList(()->"read"));
