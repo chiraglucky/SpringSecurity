@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CSRF</title>
+</head>
+
+<body>
+<h1>Hello CSRF</h1>
+ <form action="/save-data" method="post">
+     <input name="username"/><br>
+
+     <input type="hidden" th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}" />
+
+     <input type="submit" value="Save Record"/><br>
+ </form>
+</body>
+</html>
