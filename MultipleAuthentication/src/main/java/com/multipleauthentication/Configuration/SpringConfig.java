@@ -1,7 +1,9 @@
 package com.multipleauthentication.Configuration;
 
 import com.multipleauthentication.Filter.MyCustomAuthFilter;
+import com.multipleauthentication.Filter.TokenAuthFilter;
 import com.multipleauthentication.Provider.SecretKeyAuthProvider;
+import com.multipleauthentication.Provider.TokenAuthProvider;
 import com.multipleauthentication.Provider.UnamePasswordAuthProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -21,11 +23,17 @@ public class SpringConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     MyCustomAuthFilter myCustomAuthFilter;
 
+//    @Autowired
+//    TokenAuthFilter tokenAuthFilter;
+
     @Autowired
     UnamePasswordAuthProvider unamePasswordAuthProvider;
 
     @Autowired
     SecretKeyAuthProvider secretKeyAuthProvider;
+
+    @Autowired
+    TokenAuthProvider tokenAuthProvider;
 
     @Bean
     public UserDetailsService MyUserDetailsService(){
@@ -37,6 +45,10 @@ public class SpringConfig extends WebSecurityConfigurerAdapter {
         return NoOpPasswordEncoder.getInstance();
     }
 
+    @Bean
+    public TokenAuthFilter tokenAuthFilter(){
+        return new TokenAuthFilter();
+    }
     //for Autowire AuthenticationManager
     @Override
     @Bean
@@ -48,12 +60,14 @@ public class SpringConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.authenticationProvider(unamePasswordAuthProvider)
-                .authenticationProvider(secretKeyAuthProvider);
+                .authenticationProvider(secretKeyAuthProvider)
+                .authenticationProvider(tokenAuthProvider);
     }
 
     //set Custom Filter to Filterchain
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterAt(myCustomAuthFilter, BasicAuthenticationFilter.class);
+        http.addFilterAt(myCustomAuthFilter, BasicAuthenticationFilter.class)
+                .addFilterBefore(tokenAuthFilter(),BasicAuthenticationFilter.class);
     }
 }

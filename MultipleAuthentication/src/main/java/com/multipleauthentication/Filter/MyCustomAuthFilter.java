@@ -3,7 +3,9 @@ package com.multipleauthentication.Filter;
 import com.multipleauthentication.Auth.UnamePasswordAuthToken;
 import com.multipleauthentication.Auth.SecretKeyAuthToken;
 import com.multipleauthentication.Model.UserSecretKey;
+import com.multipleauthentication.Repository.TokenManager;
 import com.multipleauthentication.Repository.UserSecretKeyRepository;
+import org.apache.tomcat.util.http.parser.TokenList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -34,6 +36,9 @@ public class MyCustomAuthFilter extends OncePerRequestFilter {
     @Autowired
     UserSecretKeyRepository userSecretKeyRepository;
 
+    @Autowired
+    TokenManager tokenManager;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -63,17 +68,19 @@ public class MyCustomAuthFilter extends OncePerRequestFilter {
             Authentication authentication=new SecretKeyAuthToken(username,key);
             Authentication authPrincipal=authenticationManager.authenticate(authentication);
 
-            //generate token
-            response.setHeader("Authorization", UUID.randomUUID().toString());
+            //generate token and store in db or inmemory
+            String token=UUID.randomUUID().toString();
+            tokenManager.add(token);
+
+            //send as a response
+            response.setHeader("Authorization", token);
         }
-
-
     }
 
     //enable request at runtime
     //by default disable
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        return !request.getServletPath().equals("/hello");
+        return !request.getServletPath().equals("/login");
     }
 }
