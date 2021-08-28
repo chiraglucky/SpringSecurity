@@ -1,0 +1,32 @@
+
+     User(Resource Owner)------------------------------------↓
+        ↑   |                                          ______↓______________
+        |   |   →----------------------------------→  |Authorization Server |                                       _____________________
+        |   |   ↑  ←--------------------------------← |_____________________|
+        |   |   ↑  ↓
+        |   ↓   ↑  ↓
+         ____________                                  _________________
+        | Client(App)| -----------------------------→ | Resource Server |
+        |____________|←------------------------------← ------------------
+
+
+
+
+/*
+   OAuth2 is protocol for token based autherization
+   OAuth2 is an autherization framework
+   OAuth Roles:- Resource Owner(User),
+                 Client (App),
+                 Resource Server,:-
+                 Authentication Server :- needs Client and User info and generate Token
+   OAuth work as an actor between Client,User,Authorizatio Server,Resource Server
+
+   Grant Types:- (How user interact with client/AuthServer)
+              authorization_code :- When User send credential to AuthServer Not Client
+              implicit (deprecated)
+              client_credentials
+              refresh_token
+              password (deprecated) :-When User send credential to client
+
+
+ */
